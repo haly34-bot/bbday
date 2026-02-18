@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Happy bday👀💛🌙</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html,body{
+margin:0;
+padding:0;
+font-family:'Georgia',serif;
+color:white;
+text-align:center;
+overflow-x:hidden;
+background:linear-gradient(-45deg,#1a1a2e,#302b63,#3a1c71,#1f4068);
+background-size:400% 400%;
+animation:bgMove 18s ease infinite;
+position:relative;
+}
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at 20% 30%, rgba(255,150,220,0.15), transparent 60%),
+radial-gradient(circle at 80% 70%, rgba(150,100,255,0.15), transparent 60%);
+pointer-events:none;
+z-index:-1;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+h1{
+margin-top:30px;
+font-size:clamp(26px,6vw,42px);
+text-shadow:0 0 20px rgba(255,150,220,0.7);
+}
+
+#countdown{
+font-size:clamp(16px,4vw,22px);
+margin-bottom:15px;
+text-shadow:0 0 10px pink;
+}
+
+.card{
+width:92%;
+max-width:600px;
+margin:18px auto;
+padding:22px;
+border-radius:25px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+box-shadow:0 0 40px rgba(255,150,220,0.3);
+animation:fadeUp 1s ease;
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+button.option{
+display:block;
+width:90%;
+margin:8px auto;
+padding:12px;
+border:none;
+border-radius:25px;
+cursor:pointer;
+background:rgba(255,255,255,0.15);
+color:white;
+transition:0.3s;
+}
+
+button.option:hover{
+background:rgba(255,150,220,0.5);
+transform:scale(1.05);
+}
+
+.response{
+margin-top:8px;
+font-size:14px;
+animation:fadeUp 0.5s ease;
+}
+
+/* Floating hearts */
+.heart{
+position:fixed;
+bottom:-20px;
+font-size:18px;
+color:rgba(255,150,200,0.7);
+animation:floatUp linear infinite;
+pointer-events:none;
+}
+
+@keyframes floatUp{
+from{transform:translateY(0);}
+to{transform:translateY(-110vh);}
+}
+
+/* Birthday Popup */
+#birthdayPopup{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:90%;
+max-width:500px;
+padding:40px;
+border-radius:35px;
+background:rgba(30,10,50,0.97);
+box-shadow:0 0 100px rgba(255,100,200,0.9);
+font-size:clamp(18px,4vw,24px);
+z-index:1000;
+animation:zoomIn 1.5s ease, glow 2s infinite alternate;
+text-shadow:0 0 20px pink;
+border:2px solid rgba(255,150,220,0.6);
+}
+
+@keyframes glow{
+from{box-shadow:0 0 40px rgba(255,100,200,0.6);}
+to{box-shadow:0 0 90px rgba(255,100,200,1);}
+}
+
+@keyframes zoomIn{
+from{opacity:0; transform:translate(-50%,-50%) scale(0.6);}
+to{opacity:1; transform:translate(-50%,-50%) scale(1);}
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Counting Down ✨</h1>
+<div id="countdown"></div>
+
+<div class="card" id="dailyMessage"></div>
+<div id="quizContainer"></div>
+
+<div id="birthdayPopup">
+🎂 HAPPY BIRTHDAY Mr Ram✨💖 <br><br>
+
+From random conversations<br>
+to something that quietly stayed...<br><br>
+
+I hope this year gives you growth,<br>
+clarity,<br>
+unexpected wins,<br>
+and moments that genuinely make you smile.<br><br>
+
+You deserve peace.<br>
+You deserve success.<br>
+And extra happiness too. 💫
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+const now=new Date();
+const year=now.getFullYear();
+const startDate=new Date(year,1,18);
+const birthday=new Date(year,1,25);
+
+if(now>birthday){
+birthday.setFullYear(year+1);
+startDate.setFullYear(year+1);
+}
+
+const diff=Math.floor((now-startDate)/(1000*60*60*24));
+
+const messages=[
+`Day 1 🌙
+
+HAPPIE BIRTHDAY ✨🎂 Today is not biological bday 👀 but still wishing uh
+It’s funny how someone online
+can slowly become part of your routine.
+
+Wishing you calm thoughts
+and unexpected smiles .`,
+
+`Day 2 ✨
+
+May today give you clarity
+for things you’ve been quietly figuring out.
+
+And less overthinking… please.`,
+
+`Day 3 💫
+
+I hope you realize
+you handle more than you show.
+
+That strength? It’s impressive.`,
+
+`Day 4 🌿
+
+Wishing you focus,
+confidence,
+and
+that feels genuinely peaceful.`,
+
+`Day 5 👀
+
+Hope uh will be single in next life untile we meet  😂😂.`,
+
+`Day 6 🌌
+
+Nothing much 😌🍼.`,
+
+`Day 7 🎇
+HAPPIEST BDAY 🎉🎀
+I just wish uh always be happy.
+
+And honestly?
+You deserve a good years ahead.`
+];
+
+if(diff>=0 && diff<7){
+document.getElementById("dailyMessage").innerText=messages[diff];
+loadQuizzes(diff);
+}
+else if(now.toDateString()===birthday.toDateString()){
+document.getElementById("dailyMessage").style.display="none";
+document.getElementById("quizContainer").style.display="none";
+document.getElementById("birthdayPopup").style.display="block";
+startFireworks();
+}
+else{
+document.getElementById("dailyMessage").innerText="Something special is coming…";
+}
+
+/* Quiz (unchanged) */
+function loadQuizzes(day){
+const container=document.getElementById("quizContainer");
+container.innerHTML="";
+
+const quizData=[
+[
+{
+question:"If we met in real life, first thing you’d do?",
+options:[
+["Act normal (fail immediately)","You would NOT act normal. Let’s be honest 😂"],
+["OR somthing else 👀","I know what uh r thinking 😂"],
+["Pretend you’re shy","Shy? You? That’s suspicious."]
+]
+}
+],
+
+[
+{
+question: "Your biggest red flag is…",
+options: [
+["Replying late on purpose", "Trying to look busy? Suspicious behavior detected."],
+["Acting unbothered", "That fake calm? I know better 😏"],
+["Winning arguments you started", "You cause chaos then sit back like ‘who me?’"]
+]
+}
+],
+  
+[
+{
+question: "Lowkey… you like when I…",
+options: [
+["Give you attention", "Not too much… just enough to keep you smiling 😏"],
+["Challenge you", "You like someone who keeps up, admit it."],
+["Go quiet for a bit", "Because then you start missing the chaos."]
+]
+}
+],
+
+[
+{
+question:"Be honest… you enjoy when I…",
+options:[
+["Tease you","You act annoyed but secretly enjoy it 😂"],
+["Give attention","Selective attention hits different huh 😌"],
+["Go silent for a bit","You start missing the chaos a little."]
+]
+}
+],
+
+[
+{
+question: "Your hidden superpower is…",
+options: [
+["Stealing attention without trying", "Main character vibes detected."],
+["Winning arguments you started", "Professional instigator."],
+["Acting innocent after chaos", "The 'I did nothing' face is dangerous."]
+]
+}
+],
+
+[
+{
+question: "If I ignore you for one day…",
+options: [
+["You’d pretend not to care", "Oscar-worthy performance honestly."],
+["Send one dry message", "'Okay.' — but it means war."],
+["Start posting mysterious status", "Ohhh passive aggressive era begins 👀"]
+]
+}
+]
+
+];
+  
+
+let selected=quizData[0][0];
+
+let box=document.createElement("div");
+box.className="card";
+
+let question=document.createElement("div");
+question.innerText=selected.question;
+box.appendChild(question);
+
+selected.options.forEach(opt=>{
+let btn=document.createElement("button");
+btn.className="option";
+btn.innerText=opt[0];
+
+btn.onclick=function(){
+let existing=box.querySelector(".response");
+if(existing) existing.remove();
+let res=document.createElement("div");
+res.className="response";
+res.innerText=opt[1];
+box.appendChild(res);
+};
+
+box.appendChild(btn);
+});
+
+container.appendChild(box);
+}
+
+/* Countdown */
+setInterval(()=>{
+const now=new Date();
+let distance=birthday-now;
+let d=Math.floor(distance/(1000*60*60*24));
+let h=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+let m=Math.floor((distance%(1000*60*60))/(1000*60));
+let s=Math.floor((distance%(1000*60))/1000);
+document.getElementById("countdown").innerHTML=`⏳ ${d}d ${h}h ${m}m ${s}s`;
+},1000);
+
+/* Hearts */
+setInterval(()=>{
+let heart=document.createElement("div");
+heart.className="heart";
+heart.innerText="❤";
+heart.style.left=Math.random()*100+"vw";
+heart.style.animationDuration=(5+Math.random()*5)+"s";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),9000);
+},800);
+
+/* Beautiful Fireworks */
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function createFirework(){
+let x=Math.random()*canvas.width;
+let y=Math.random()*canvas.height/2;
+for(let i=0;i<80;i++){
+particles.push({
+x:x,
+y:y,
+radius:2+Math.random()*2,
+color:`hsl(${Math.random()*360},100%,70%)`,
+speedX:(Math.random()-0.5)*6,
+speedY:(Math.random()-0.5)*6,
+life:100
+});
+}
+}
+
+function animateFireworks(){
+ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+particles.forEach((p,index)=>{
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+ctx.fillStyle=p.color;
+ctx.fill();
+p.x+=p.speedX;
+p.y+=p.speedY;
+p.life--;
+if(p.life<=0){particles.splice(index,1);}
+});
+
+requestAnimationFrame(animateFireworks);
+}
+
+function startFireworks(){
+setInterval(createFirework,700);
+animateFireworks();
+}
+</script>
+
+</body>
+</html>
